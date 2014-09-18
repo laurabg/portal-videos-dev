@@ -10,20 +10,20 @@ function buscarCursos($dir) {
 			if ($filename != "." && $filename != "..") {
 				if (is_dir($dir."/".$filename)) {
 					$cont++;
-					echo "Encontrado curso ".$filename."<br />";
+				//	echo "Encontrado curso ".$filename."<br />";
 					$IDcurso = getIDcurso($filename);
 					buscarTemas($IDcurso, $filename, $dir."/".$filename);
 				} else {
-					echo "Los ficheros dentro de cursos no se procesarán <br />";
+				//	echo "Los ficheros dentro de cursos no se procesarán <br />";
 				}
 			}
 		}
 
 		if ($cont == 0) {
-			echo "No existen cursos<br />";
+		//	echo "No existen cursos<br />";
 		}
 	} else {
-		echo "Error al leer de ".$dir."<br />";
+	//	echo "Error al leer de ".$dir."<br />";
 	}
 }
 
@@ -37,7 +37,7 @@ function buscarTemas($IDcurso, $cursoName, $dir) {
 				// Si existe la carpeta de INBOX, leer su contenido:
 				if (is_dir($dir."/".$filename)) {
 					$cont++;
-					echo "&nbsp;&nbsp;&nbsp;Encontrado tema ".$filename."<br />";
+				//	echo "&nbsp;&nbsp;&nbsp;Encontrado tema ".$filename."<br />";
 					$IDtema = getIDtema($IDcurso, $filename);
 
 					// Comprobar si existen las siguientes carpetas:
@@ -51,16 +51,16 @@ function buscarTemas($IDcurso, $cursoName, $dir) {
 
 					//echo "Las carpetas dentro de temas no se procesarán <br />";
 				} else {
-					echo "&nbsp;&nbsp;&nbsp;Los ficheros dentro de un curso no se procesarán <br />";
+				//	echo "&nbsp;&nbsp;&nbsp;Los ficheros dentro de un curso no se procesarán <br />";
 				}
 			}
 		}
 
 		if ($cont == 0) {
-			echo "&nbsp;&nbsp;&nbsp;No existen temas para ".$dir."<br />";
+		//	echo "&nbsp;&nbsp;&nbsp;No existen temas para ".$dir."<br />";
 		}
 	} else {
-		echo "&nbsp;&nbsp;&nbsp;Error al leer de ".$dir."<br />";
+	//	echo "&nbsp;&nbsp;&nbsp;Error al leer de ".$dir."<br />";
 	}
 }
 
@@ -79,98 +79,53 @@ function buscarVideos($IDcurso, $IDtema, $cursoTema, $dir) {
 					$extension = pathinfo($dir."/".$filename, PATHINFO_EXTENSION);
 					if (in_array($extension, $extensionesValidas)) {
 						$cont++;
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(".$IDcurso." - ".$IDtema.") Encontrado vídeo ".$filename."<br />";
+					//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(".$IDcurso." - ".$IDtema.") Encontrado vídeo ".$filename."<br />";
 						$IDvideo = getIDvideo($IDcurso, $IDtema, $filename, str_replace(_DIRCURSOS."/", "", $dir));
 
 						$img = getPortada($filename, $cursoTema, $dir);
+						if ($img != '') {
+							updateVideo($IDvideo, $img);
+						}
 					}
 				}
 			}
 		}
 
 		if ($cont == 0) {
-			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No existen vídeos para ".$dir."<br />";
+		//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No existen vídeos para ".$dir."<br />";
 		}
 	} else {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Error al leer de ".$dir."<br />";
+	//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Error al leer de ".$dir."<br />";
 	}
-	echo "<br /><br />";
+	//echo "<br /><br />";
 }
 
 
 function getPortada($nombre, $cursoTema, $ruta) {
-	echo $nombre."<br />";
-	echo $ruta."<br />";
+	//echo $nombre."<br />";
+	//echo $ruta."<br />";
 
 	$ffmpeg = "/usr/bin/ffmpeg";
 	$video = $ruta."/".$nombre;
 	$img = $cursoTema."/img/".str_replace(".mp4","",$nombre).".jpg";
 	$cmd = "$ffmpeg -i ".$video." -ss 3 -vframes 1 -f image2 "._PORTALROOT._VIDEOSDATA.$img;
-	echo $cmd."<br />";
+	//echo $cmd."<br />";
 	
 	if (!shell_exec($cmd)) {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OK!!!<br />";
+	//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OK!!!<br />";
 	} else {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooohhh....<br />";
+	//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooohhh....<br />";
 	}
 
 	if (file_exists(_PORTALROOT._VIDEOSDATA.$img)) {
-		echo "<br /><br /><img src=\""._VIDEOSDATA.$img."\" /><br /><br />";
+	//	echo "<br /><br /><img src=\""._VIDEOSDATA.$img."\" /><br /><br />";
 		
 		//$db->exec('UPDATE videos SET portada = "'.$img.'" WHERE ID = '.$IDvideo);
 	} else {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooohhh la foto ("._PORTALROOT._VIDEOSDATA.$img.") no existe....<br />";
+	//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooohhh la foto ("._PORTALROOT._VIDEOSDATA.$img.") no existe....<br />";
 	}
 
-	return "";
-	/*
-	$ffmpeg = "/usr/bin/ffmpeg";
-	$video = $ruta."/".$nombre;
-	$img = "/videos-img/".str_replace(".mp4","",$nombre).".jpg";
-	$cmd = "$ffmpeg -i "._DIRCURSOS."/".$video." -ss 3 -vframes 1 -f image2 "._PORTALROOT.$img;
-	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$cmd."<br /><br /><br />";
-
-	if (!shell_exec($cmd)) {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OK!!!<br />";
-	} else {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooohhh....<br />";
-	}
-	if (file_exists(_PORTALROOT.$img)) {
-		echo "<br /><br /><img src=\"$img\" /><br /><br />";
-		
-		//$db->exec('UPDATE videos SET portada = "'.$img.'" WHERE ID = '.$IDvideo);
-	} else {
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooohhh la foto ("._PORTALROOT."/".$img.") no existe....<br />";
-	}
-
-	/*$portada = '';
-
-	// Si no existe la carpeta de "portadas", crearla:
-	if (!is_dir($ruta."/portadas")) {
-		mkdir($ruta."/portadas", 0777);
-	}
-
-	// Obtener la portada del vídeo
-	$portada = str_replace(".mp4","",$video).".jpg";
-
-
-	chdir($ruta);
-	$ffmpeg = "/usr/bin/ffmpeg";
-	$vid = $video;
-	$cmd = "$ffmpeg -i $vid -ss 0 -vframes 1 -f image2 $portada";
-	echo "****".shell_exec("pwd")."****<br />";
-	echo $cmd."<br /><br /><br />";
-	/*if (!shell_exec($cmd)) {
-		echo "OK!!!";
-	} else {
-		echo "ooohhh....";
-	}*/
-
-
-	//echo "<br /><br />sudo /usr/bin/ffmpeg -i ".$ruta."/".$video." -ss 0 -vframes 1 -f image2 ".$portada."<br /><br />";
-	//exec("sudo /usr/bin/ffmpeg -i ".$ruta."/".$video." -ss 0 -vframes 1 -f image2 ".$portada);
-
-	//$db->exec('UPDATE videos SET portada = "'.$portada.'" WHERE ID = '.$IDvideo);
+	return $img;
 }
 
 function createDir($rutaDir) {
