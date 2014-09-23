@@ -53,15 +53,23 @@
 			</div>
 		</div>
 	</header>
-	<div class="jumbotron">
+	<?php
+	if (isset($_GET['IDcurso'])) {
+		echo listarContenidoCurso($_GET['IDcurso']);
+	} else {
+		echo getCabecera('Portal de vídeos','Selecciona el curso que desea ver.');
+		echo listarCursos();
+	}
+	?>
+	<!--div class="jumbotron">
 		<div class="container">
 			<h1>Portal Vídeos</h1>
 			<p class="lead">Portal para visualización de vídeos agrupados por cursos.</p>
-		</div><!-- /.container -->
+		</div>
 	</div>
 	<div class="container">
 		<?php echo listarCursos(); ?>
-	</div>
+	</div-->
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->

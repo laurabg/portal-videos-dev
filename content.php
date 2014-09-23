@@ -2,86 +2,117 @@
 
 function listarCursos() {
 	global $db;
-	$content = "";
-	$OUT = "";
+	
+	$OUT = '';
+	$cont = 0;
 
-	$resCursos = $db->query('SELECT * FROM cursos');
-	$i = 0;
-	while ($row = $resCursos->fetchArray()) {
-		$OUT .= '<div class="row">';
-			$OUT .= '<h2>'.$row['nombre'].'</h2>';
-
-			$resTemas = $db->query('SELECT * FROM temas WHERE IDcurso = '.$row['ID']);
-			while ($rowTema = $resTemas->fetchArray()) {
-				$OUT .= '<div class="col-md-4">';
-					$OUT .= '<h3>'.$rowTema['nombre'].'</h3>';
+	$OUT .= '<div class="container">';
+		$OUT .= '<div class="panel panel-primary">';
+			$OUT .= '<div class="panel-heading">Cursos disponibles</div>';
+			$OUT .= '<div class="panel-body">';
+				$OUT .= '<div class="row">';
+				
+				$res = $db->query('SELECT * FROM cursos');
+				while ($row = $res->fetchArray()) {
+					if ($cont % 3 == 0) {
+						$OUT .= '</div><div class="row">';
+					} 
+					$OUT .= '<div class="col-sm-6 col-md-4">';
+						$OUT .= '<div class="thumbnail">';
+							$OUT .= '<div class="caption">';
+								$OUT .= '<h3>'.$row['nombre'].'</h3>';
+								$OUT .= '<p>'.$row['descripcion'].'</p>';
+								$OUT .= '<p><a href="?IDcurso='.$row['ID'].'" class="btn btn-primary" role="button">Acceder al curso</a></p>';
+							$OUT .= '</div>';
+						$OUT .= '</div>';
+					$OUT .= '</div>';
+					
+					$cont++;
+				}
 				$OUT .= '</div>';
-			}
+			$OUT .= '</div>';
+		$OUT .= '</div>';
+	$OUT .= '</div>';
+	
+	return $OUT;
+}
+
+function listarContenidoCurso($IDcurso) {
+	global $db;
+
+	$OUT = '';
+	
+	$res = $db->query('SELECT * FROM cursos WHERE ID = '.$IDcurso);
+	while ($row = $res->fetchArray()) {
+		$OUT = getCabecera($row['nombre'], $row['descripcion']);
+	}
+	
+	$OUT .= '<div class="container">';
+		
+	$res = $db->query('SELECT * FROM temas WHERE IDcurso = '.$IDcurso);
+	while ($row = $res->fetchArray()) {
+		$OUT .= '<div class="panel panel-primary">';
+			$OUT .= '<div class="panel-heading">'.$row['nombre'].'</div>';
+			$OUT .= '<div class="panel-body">';
+				$OUT .= listarVideos($IDcurso, $row['ID']);
+			$OUT .= '</div>';
 		$OUT .= '</div>';
 	}
+	$OUT .= '</div>';
 
 	return $OUT;
 }
 
-/*********************************************************************
- listCursos: Lista los cursos de la BBDD
- *********************************************************************/
-function listCursos() {
-	$OUT = "";
-	$dbcon = dbConnection();
+
+function listarVideos($IDcurso, $IDtema) {
+	global $db;
+
+	$OUT = '';
 	
-	$SQL = "SELECT * FROM cursos";
-	$res = sqlite_query($dbcon, $SQL);
-	if (!$res) {
-		die ("Cannot execute query<br />$SQL");
+	$OUT .= '<div class="row">';
+	
+	$cont = 0;
+
+	$resVideos = $db->query('SELECT * FROM videos WHERE IDcurso = '.$IDcurso.' AND IDtema = '.$IDtema);
+	while ($row = $resVideos->fetchArray()) {
+		if ($cont % 3 == 0) {
+			$OUT .= '</div><div class="row">';
+		} 
+		$OUT .= '<div class="col-sm-6 col-md-4 video-col">';
+			$OUT .= '<div class="thumbnail">';
+				$OUT .= '<a class="ver-video" href="#"><span class="glyphicon glyphicon-play play-video"></span>';
+				$OUT .= '<img src="'._DIRCURSOS.$row['img'].'" /></a>';
+				$OUT .= '<div class="caption">';
+					$OUT .= '<h3>'.$row['nombre'].'</h3>';
+					$OUT .= '<p>Descripción del vídeo '.$row['nombre'].'</p>';
+					$OUT .= '<p><a href="#" class="btn btn-primary" role="button">Ver vídeo</a></p>';
+				$OUT .= '</div>';
+			$OUT .= '</div>';
+		$OUT .= '</div>';
+		
+		$cont++;
+
+	//	$OUT .= '<div class="flowplayer" data-swf="js/flowplayer-5.4.4/flowplayer.swf">';
+	//		$OUT .= '<video controls>';
+	//			$OUT .= '<source src="'._DIRCURSOS.$row["ruta"].'" type="video/mp4" />';
+	//		$OUT .= '</video>';
+	//	$OUT .= '</div>';
 	}
+	$OUT .= '</div>';
 	
-	while ($row = sqlite_fetch_array($res, SQLITE_ASSOC)) {
-		$OUT .= listVideos($row["id"], $row["nombre"]);
-	}
-	
-	echo $OUT;
+	return $OUT;
 }
 
+function getCabecera($nombre, $desc) {
+	$OUT = '';
 
-/*********************************************************************
- listVideos: Lista los videos de un curso
- Parámetros:
-	@IDcurso				Identificador del curso
- *********************************************************************/
-function listVideos($IDcurso, $nombreCurso) {
-	$OUT = "";
-	
-	$dbcon = dbConnection();
-	
-	$SQL = "SELECT * FROM videos WHERE curso = '".$IDcurso."' ORDER BY id DESC LIMIT "._NUMVIDEOSHOME;
-	$res = sqlite_query($dbcon, $SQL);
-	if (!$res) {
-		die ("Cannot execute query<br />$SQL");
-	}
-	
-	if (sqlite_num_rows($res) > 0) {
-		$OUT .= '<div class="panel panel-default">';
-		$OUT .= '<div class="panel-heading"><h3 class="panel-title">'.$nombreCurso.'</h3></div>';
-		$OUT .= '<div class="panel-body"><div class="row">';
-	}
-	
-	while ($row = sqlite_fetch_array($res, SQLITE_ASSOC)) {
-		$OUT .= '<div class="col col-md-3">';
-			$OUT .= '<div class=""><a href="?IDcurso='.$IDcurso.'&IDvideo='.$row['id'].'">'.$row["nombre"].'</a></div>';
-		//	$OUT .= '<div class="flowplayer" data-swf="js/flowplayer-5.4.4/flowplayer.swf">';
-		//		$OUT .= '<video controls>';
-		//			$OUT .= '<source src="'._DIRCURSOS.'/'.$row["ruta"].'/'.$row["nombre"].'" type="video/mp4" />';
-		//		$OUT .= '</video>';
-		//	$OUT .= '</div>';
+	$OUT .= '<div class="jumbotron">';
+		$OUT .= '<div class="container">';
+			$OUT .= '<h1>'.$nombre.'</h1>';
+			$OUT .= '<p class="lead">'.$desc.'</p>';
 		$OUT .= '</div>';
-	}
-	
-	if (sqlite_num_rows($res) > 0) {
-		$OUT .= '</div><div class="row"><a href="?IDcurso='.$IDcurso.'"><button class="btn btn-default">Ver curso completo</button></a></div>';
-		$OUT .= '</div></div>';
-	}
-	
+	$OUT .= '</div>';
+
 	return $OUT;
 }
 

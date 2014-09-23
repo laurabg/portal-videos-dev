@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 define("_PORTALROOT", $_SERVER["DOCUMENT_ROOT"]."/portal-videos-dev/");
 define("_BBDD", _PORTALROOT."db/dbportalvideos.db");
 define("_BBDDLOG", _PORTALROOT."db/dblog.db");
-define("_DIRCURSOS", _PORTALROOT."cursos/");
+define("_DIRCURSOS", "cursos/");
 define("_VIDEOSDATA", "videos-data/");
 //define("_DIRCURSOS", "/home/laura/cursos");
 
@@ -19,6 +19,6 @@ include_once('content.php');
 
 dbCreate(_BBDD);
 //resetDB();
-buscarCursos(_DIRCURSOS);
+//buscarCursos(_DIRCURSOS);
 
 ?>
