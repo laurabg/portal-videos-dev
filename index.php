@@ -1,5 +1,6 @@
 <?php
 	include_once('config.php');
+	include_once('db/db.php');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -13,7 +14,7 @@
 	<title>Portal Vídeos</title>
 	<!-- Bootstrap core CSS -->
 	<link href="css/bootstrap.min.css" rel="stylesheet" />
-	<link href="css/bootstrap-theme.min.css" rel="stylesheet" />
+	<!--link href="css/bootstrap-theme.min.css" rel="stylesheet" /-->
 	<link href="css/style.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="js/flowplayer-5.4.4/skin/minimalist.css"></link>
 	
@@ -53,23 +54,7 @@
 			</div>
 		</div>
 	</header>
-	<?php
-	if (isset($_GET['IDcurso'])) {
-		echo listarContenidoCurso($_GET['IDcurso']);
-	} else {
-		echo getCabecera('Portal de vídeos','Selecciona el curso que desea ver.');
-		echo listarCursos();
-	}
-	?>
-	<!--div class="jumbotron">
-		<div class="container">
-			<h1>Portal Vídeos</h1>
-			<p class="lead">Portal para visualización de vídeos agrupados por cursos.</p>
-		</div>
-	</div>
-	<div class="container">
-		<?php echo listarCursos(); ?>
-	</div-->
+	<?php include_once('modulos/content.php'); ?>
 
 	<!-- Bootstrap core JavaScript
 	================================================== -->

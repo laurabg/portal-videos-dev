@@ -114,7 +114,7 @@ function buscarVideos($IDcurso, $IDtema, $dir) {
 	global $extensionesValidas;
 
 	$cont = 0;
-	$ubicacion = str_replace(_DIRCURSOS, '', $dir);
+	$ubicacion = str_replace(_DOCUMENTROOT._DIRCURSOS, '', $dir);
 
 	if ($handle = opendir($dir)) {
 		while (false !== ($filename = readdir($handle))) {
@@ -139,6 +139,7 @@ function buscarVideos($IDcurso, $IDtema, $dir) {
 						$IDvideo = getIDvideo($IDcurso, $IDtema, $filename, $ubicacion."/".$filenameNEW);
 
 						$img = getPortada($filenameNEW, $dir);
+						
 						if ($img != '') {
 							updateVideo($IDvideo, $ubicacion."/img/".$img);
 						}
@@ -229,37 +230,39 @@ function getPortada($nombre, $ruta) {
 $db = null;
 $dbLog = null;
 
-include_once('config.php');
-include_once('db.php');
+include_once('../config.php');
+include_once(_DOCUMENTROOT.'db/db.php');
 
 dbCreate(_BBDD);
 dbLogCreate(_BBDDLOG);
 
-// resetDB();
-// resetDBLog();
+if ( (isset($_GET['rehacer']))&&($_GET['rehacer'] == 1) ) {
+	resetDB();
+	resetDBLog();
+}
 
 logAction("Inicio Robot");
 
 foreach ($listaDirs as $dir) {
 	logAction("Analizando ".$dir);
 	// Comprobar si se encuentra en la misma ruta que los cursos:
-	if (!is_dir(_DIRCURSOS."/".$dir)) {
+	if (!is_dir(_DOCUMENTROOT._DIRCURSOS."/".$dir)) {
 		logAction($dir." no se encuentra en la misma ruta que el portal.");
 
 		// Si está en otra dirección, crear un enlace:
 		$link = split("/", $dir);
 		$link = $link[count($link)-2];
 
-		if (!is_link(_DIRCURSOS.$link)) {
-			logAction("Creando link de ".$dir." en "._DIRCURSOS.$link);
+		if (!is_link(_DOCUMENTROOT._DIRCURSOS.$link)) {
+			logAction("Creando link de ".$dir." en "._DOCUMENTROOT._DIRCURSOS.$link);
 		//	echo $dir." - ".$link."<br />";
-			symlink($dir, _DIRCURSOS.$link);
+			symlink($dir, _DOCUMENTROOT._DIRCURSOS.$link);
 			$dir = $link;
 		}
 
-		buscarCursos(_DIRCURSOS.$link."/");
+		buscarCursos(_DOCUMENTROOT._DIRCURSOS.$link."/");
 	} else {
-		buscarCursos(_DIRCURSOS.$dir);
+		buscarCursos(_DOCUMENTROOT._DIRCURSOS.$dir);
 	}
 }
 
