@@ -2,7 +2,7 @@
 
 function dbCreate($dbName) {
 	global $db;
-
+	
 	if (!file_exists($dbName)) {
 	//	echo 'Creando bbdd...<br />';
 		$db = new SQLite3($dbName);
@@ -93,7 +93,7 @@ function getIDcurso($nombreCurso) {
 
 	if ($db->querySingle('SELECT COUNT(*) FROM cursos WHERE nombre = "'.$nombreCurso.'"') == 0) {
 	//	echo "Crear curso ".$nombre."<br />";
-		$db->exec('INSERT INTO cursos (nombre) VALUES ("'.$nombreCurso.'")');
+		$db->exec('INSERT INTO cursos (nombre, descripcion) VALUES ("'.$nombreCurso.'","Descripción del curso '.$nombreCurso.'")');
 	} else {
 	//	echo "El curso ".$nombre." existe<br />";
 	}
@@ -108,7 +108,7 @@ function getIDtema($IDcurso, $nombreTema) {
 
 	if ($db->querySingle('SELECT COUNT(*) FROM temas WHERE nombre = "'.$nombreTema.'" AND IDcurso = '.$IDcurso) == 0) {
 	//	echo "&nbsp;&nbsp;&nbsp;Crear tema ".$nombre."<br />";
-		$db->exec('INSERT INTO temas (nombre, IDcurso) VALUES ("'.$nombreTema.'", '.$IDcurso.')');
+		$db->exec('INSERT INTO temas (nombre, descripcion, IDcurso) VALUES ("'.$nombreTema.'", "Descripción del tema '.$nombreTema.'", '.$IDcurso.')');
 	} else {
 	//	echo "&nbsp;&nbsp;&nbsp;El tema ".$nombre." existe<br />";
 	}
@@ -123,7 +123,7 @@ function getIDvideo($IDcurso, $IDtema, $nombre, $ruta) {
 
 	if ($db->querySingle('SELECT COUNT(*) FROM videos WHERE nombre = "'.$nombre.'" AND IDtema = '.$IDtema) == 0) {
 	//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Crear video ".$nombre."<br />";
-		$db->exec('INSERT INTO videos (nombre, ruta, IDtema, IDcurso) VALUES ("'.$nombre.'", "'.$ruta.'", '.$IDtema.', '.$IDcurso.')');
+		$db->exec('INSERT INTO videos (nombre, descripcion, ruta, IDtema, IDcurso) VALUES ("'.$nombre.'", "Descripción del vídeo '.$nombre.'", "'.$ruta.'", '.$IDtema.', '.$IDcurso.')');
 	} else {
 	//	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;El video ".$nombre." existe<br />";
 	}
