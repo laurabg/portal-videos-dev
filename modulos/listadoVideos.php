@@ -7,9 +7,9 @@ $cont = 0;
 $numCol = 4;
 
 // Mostrar la cabecera del curso, con su nombre y descripción:
-$res = $db->query('SELECT * FROM temas WHERE IDcurso = '.$IDcurso.' AND ID = '.$IDtema);
+$res = $db->query('SELECT nombre, descripcion FROM temas WHERE IDcurso = '.$IDcurso.' AND ID = '.$IDtema);
 while ($row = $res->fetchArray()) {
-	$OUT .= getCabecera($row['nombre'],$row['descripcion']);
+	$OUT .= getCabecera($row['nombre'],$row['descripcion'], 1, $IDcurso);
 }
 $res = null;
 	
@@ -19,13 +19,9 @@ $OUT .= '<div class="container">';
 	
 	$resVideos = $db->query('SELECT * FROM videos WHERE IDcurso = '.$IDcurso.' AND IDtema = '.$IDtema);
 	while ($row = $resVideos->fetchArray()) {
-//		if ($cont % $numCol == 0) {
-//			$OUT .= '</div><div class="row">';
-//		} 
-		for ($i=0; $i <4 ; $i++) { 
 		$OUT .= '<div class="col-sm-6 col-md-'.(12 / $numCol).' video-col">';
 			$OUT .= '<div class="thumbnail">';
-				$OUT .= '<a class="ver-video" href="#"><span class="glyphicon glyphicon-play play-video"></span>';
+				$OUT .= '<a class="ver-video" href="?IDcurso='.$IDcurso.'&IDtema='.$IDtema.'&IDvideo='.$row['ID'].'"><span class="glyphicon glyphicon-play play-video"></span>';
 				$OUT .= '<img src="'._DIRCURSOS.$row['img'].'" /></a>';
 				$OUT .= '<div class="caption">';
 					$OUT .= '<h3>'.$row['nombre'].'</h3>';
@@ -34,15 +30,6 @@ $OUT .= '<div class="container">';
 				$OUT .= '</div>';
 			$OUT .= '</div>';
 		$OUT .= '</div>';
-		}
-		
-		$cont++;
-
-//		$OUT .= '<div class="flowplayer" data-swf="js/flowplayer-5.4.4/flowplayer.swf">';
-//			$OUT .= '<video controls>';
-//				$OUT .= '<source src="'._DIRCURSOS.$row["ruta"].'" type="video/mp4" />';
-//			$OUT .= '</video>';
-//		$OUT .= '</div>';
 	}
 	$OUT .= '</div>';
 $OUT .= '</div>';

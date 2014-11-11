@@ -4,7 +4,7 @@ global $db;
 $OUT = '';
 $cont = 0;
 
-$OUT .= getCabecera('Portal de vídeos','Selecciona el curso que desea ver.');
+$OUT .= getCabecera('Portal de vídeos','Selecciona el curso que desea ver.', 0);
 
 $OUT .= '<div class="container">';
 	$OUT .= '<div class="panel panel-primary">';

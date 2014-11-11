@@ -5,15 +5,15 @@ global $db;
 $OUT = '';
 
 // Mostrar la cabecera del curso, con su nombre y descripción:
-$res = $db->query('SELECT * FROM temas WHERE IDcurso = '.$IDcurso.' AND ID = '.$IDtema);
+$res = $db->query('SELECT nombre, descripcion FROM temas WHERE IDcurso = '.$IDcurso.' AND ID = '.$IDtema);
 while ($row = $res->fetchArray()) {
-	$OUT .= getCabecera($row['nombre'],$row['descripcion']);
+	$OUT .= getCabecera($row['nombre'], $row['descripcion'], 1, $IDcurso, $IDtema);
 }
 $res = null;
 
 $OUT .= '<div class="container">';
 	$OUT .= '<div class="row">';
-		$OUT .= '<div class="col-md-3">';
+		$OUT .= '<div class="col-md-3 hidden-xs">';
 
 		// Listado del resto de vídeos del tema:
 		$res = $db->query('SELECT * FROM videos WHERE IDcurso = '.$IDcurso.' AND IDtema = '.$IDtema.' AND ID != '.$IDvideo);
@@ -34,7 +34,7 @@ $OUT .= '<div class="container">';
 		$res = $db->query('SELECT * FROM videos WHERE IDcurso = '.$IDcurso.' AND IDtema = '.$IDtema.' AND ID = '.$IDvideo);
 		while ($row = $res->fetchArray()) {
 			$OUT .= '<div class="video">';
-				$OUT .= '<video controls preload="auto" width="100%">';
+				$OUT .= '<video controls preload="auto" width="100%" poster="'._DIRCURSOS.$row['img'].'">';
 					$OUT .= '<source src="'._DIRCURSOS.$row['ruta'].'" type="video/mp4" />';
 				$OUT .= '</video>';
 				$OUT .= '<div class="thumbnail">';

@@ -32,6 +32,22 @@ function dbLogCreate($dbLogName) {
 	}
 }
 
+function dbAnalyticsCreate($dbAnName) {
+	global $dbAn;
+
+	if (!file_exists($dbAnName)) {
+	//	echo 'Creando bbddLog...<br />';
+		$dbAn = new SQLite3($dbAnName);
+		chmod($dbAnName, 0777);
+
+	//	echo 'Creando tablasLog...<br />';
+		crearTablasAnalytics();
+	} else {
+	//	echo 'La base de datos ya existe<br />';
+		$dbAn = new SQLite3($dbAnName);
+	}
+}
+
 function crearTablas() {
 	global $db;
 
@@ -68,6 +84,19 @@ function crearTablasLog() {
 	);
 }
 
+function crearTablasAnalytics() {
+	global $dbAn;
+
+	$dbAn->exec('CREATE TABLE analytics (
+		ID INTEGER PRIMARY KEY, 
+		IDcurso INTEGER,
+		IDtema INTEGER,
+		IDvideo INTEGER,
+		IDusuario INTEGER,
+		"timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP);'
+	);
+}
+
 function resetDB() {
 	global $db;
 	$db->exec('DELETE FROM videos');
@@ -80,11 +109,23 @@ function resetDBLog() {
 	$dbLog->exec('DELETE FROM log');
 }
 
+function resetDBAnalytics() {
+	global $dbAn;
+	$dbAn->exec('DELETE FROM analytics');
+}
+
 
 function logAction($action) {
 	global $dbLog;
 
 	$dbLog->exec('INSERT INTO log (descripcion) VALUES ("'.$action.'")');
+}
+
+
+function videoPlayed($IDcurso, $IDtema, $IDvideo, $IDusuario) {
+	global $dbAn;
+
+	$dbAn->exec('INSERT INTO analytics (IDcurso, IDtema, IDvideo, IDusuario) VALUES ('.$IDcurso.','.$IDtema.','.$IDvideo.','.$IDusuario.')');
 }
 
 

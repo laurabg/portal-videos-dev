@@ -2,40 +2,24 @@
 
 dbCreate(_BBDD);
 
-function listarCursos() {
-	global $db;
-	
-	$OUT = '';
-	$cont = 0;
-
-	$res = $db->query('SELECT * FROM cursos');
-	while ($row = $res->fetchArray()) {
-		if ($cont % 3 == 0) {
-			$OUT .= '</div><div class="row">';
-		} 
-		$OUT .= '<div class="col-sm-6 col-md-4">';
-			$OUT .= '<div class="thumbnail">';
-				$OUT .= '<div class="caption">';
-					$OUT .= '<h3>'.$row['nombre'].'</h3>';
-					$OUT .= '<p>'.$row['descripcion'].'</p>';
-					$OUT .= '<p><a href="?IDcurso='.$row['ID'].'" class="btn btn-primary" role="button">Acceder al curso</a></p>';
-				$OUT .= '</div>';
-			$OUT .= '</div>';
-		$OUT .= '</div>';
-		
-		$cont++;
-	}
-	
-	echo $OUT;
-}
-
-function getCabecera($nombre, $desc) {
+function getCabecera($nombre, $desc, $showButtons, $IDcurso, $IDtema) {
 	$OUT = '';
 
 	$OUT .= '<div class="jumbotron">';
 		$OUT .= '<div class="container">';
 			$OUT .= '<h1>'.$nombre.'</h1>';
 			$OUT .= '<p class="lead">'.$desc.'</p>';
+			if ($showButtons == 1) {
+				$OUT .= '<div class="btn-group pull-right">';
+					$OUT .= '<a class="btn btn-default" href="'._PORTALROOT.'">Volver al listado de cursos</a>';
+					if ($IDcurso != '') {
+						$OUT .= '<a class="btn btn-default" href="?IDcurso='.$IDcurso.'">Volver al curso</a>';
+					}
+					if ($IDtema != '') {
+						$OUT .= '<a class="btn btn-default" href="?IDcurso='.$IDcurso.'&IDtema='.$IDtema.'">Volver al tema</a>';
+					}
+				$OUT .= '</div>';
+			}
 		$OUT .= '</div>';
 	$OUT .= '</div>';
 
